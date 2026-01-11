@@ -1,0 +1,55 @@
+{
+  "family": "freqtrade-task",
+  "networkMode": "host",
+  "requiresCompatibilities": ["EC2"],
+  "cpu": "256",
+  "memory": "512",
+  "containerDefinitions": [
+    {
+      "name": "freqtrade",
+      "image": "freqtradeorg/freqtrade:stable",
+      "essential": true,
+      "command": [
+        "trade",
+        "--logfile",
+        "/freqtrade/user_data/logs/freqtrade.log",
+        "--config",
+        "/freqtrade/user_data/config.json",
+        "--strategy",
+        "Strategy002"
+      ],
+      "mountPoints": [
+        {
+          "sourceVolume": "user_data",
+          "containerPath": "/freqtrade/user_data"
+        },
+        {
+          "sourceVolume": "ui_installed",
+          "containerPath": "/freqtrade/freqtrade/rpc/api_server/ui/installed"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/freqtrade",
+          "awslogs-region": "ap-southeast-5",
+          "awslogs-stream-prefix": "freqtrade"
+        }
+      }
+    }
+  ],
+  "volumes": [
+    {
+      "name": "user_data",
+      "host": {
+        "sourcePath": "/opt/freqtrade/user_data"
+      }
+    },
+    {
+      "name": "ui_installed",
+      "host": {
+        "sourcePath": "/opt/freqtrade/ui/installed"
+      }
+    }
+  ]
+}
